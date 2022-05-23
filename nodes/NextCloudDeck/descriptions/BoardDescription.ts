@@ -1,49 +1,49 @@
-import { INodeProperties } from "n8n-workflow";
+import { INodeProperties } from 'n8n-workflow';
 
 export const boardOperations: INodeProperties[] = [
 	{
-		displayName: "Operation",
-		name: "operation",
-		type: "options",
+		displayName: 'Operation',
+		name: 'operation',
+		type: 'options',
 		displayOptions: {
 			show: {
-				resource: ["boards"],
+				resource: ['boards'],
 			},
 		},
 		options: [
 			{
-				name: "Create",
-				value: "create",
-				description: "Create an entry",
+				name: 'Create',
+				value: 'create',
+				description: 'Create an entry',
 			},
 			{
-				name: "Delete",
-				value: "delete",
-				description: "Delete an entry",
+				name: 'Delete',
+				value: 'delete',
+				description: 'Delete an entry',
 			},
 			{
-				name: "Get",
-				value: "get",
-				description: "Get data of an entry",
+				name: 'Get',
+				value: 'get',
+				description: 'Get data of an entry',
 			},
 			{
-				name: "List",
-				value: "list",
-				description: "Get data of all entries",
+				name: 'List',
+				value: 'list',
+				description: 'Get data of all entries',
 			},
 			{
-				name: "Update",
-				value: "update",
-				description: "Update an entry",
+				name: 'Update',
+				value: 'update',
+				description: 'Update an entry',
 			},
 			{
-				name: "Add Acl",
-				value: "addAcl",
-				description: "Add new acl rule",
+				name: 'Add Acl',
+				value: 'addAcl',
+				description: 'Add new acl rule',
 			},
 		],
-		default: "create",
-		description: "The operation to perform",
+		default: 'create',
+		description: 'The operation to perform',
 	},
 ];
 
@@ -52,47 +52,47 @@ export const boardFields: INodeProperties[] = [
 	/*                                boards:create                             */
 	/* ------------------------------------------------------------------------- */
 	{
-		displayName: "Title",
-		name: "title",
-		type: "string",
+		displayName: 'Title',
+		name: 'title',
+		type: 'string',
 		required: true,
 		displayOptions: {
 			show: {
-				resource: ["boards"],
-				operation: ["create"],
+				resource: ['boards'],
+				operation: ['create'],
 			},
 		},
-		default: "",
-		description: "The title of the new board",
+		default: '',
+		description: 'The title of the new board',
 	},
 	{
-		displayName: "Color",
-		name: "color",
-		type: "string",
+		displayName: 'Color',
+		name: 'color',
+		type: 'string',
 		required: true,
 		displayOptions: {
 			show: {
-				resource: ["boards"],
-				operation: ["create"],
+				resource: ['boards'],
+				operation: ['create'],
 			},
 		},
-		default: "",
-		description: "The hexadecimal color of the new board (e.g. FF0000)",
+		default: '',
+		description: 'The hexadecimal color of the new board (e.g. FF0000)',
 	},
 
 	/*-------------------------------------------------------------------------- */
 	/*                                boards:delete                            */
 	/* ------------------------------------------------------------------------- */
 	{
-		displayName: "ID",
-		name: "id",
+		displayName: 'ID',
+		name: 'id',
 		required: true,
-		type: "string",
-		default: "",
+		type: 'string',
+		default: '',
 		displayOptions: {
 			show: {
-				resource: ["boards"],
-				operation: ["delete"],
+				resource: ['boards'],
+				operation: ['delete'],
 			},
 		},
 	},
@@ -101,15 +101,15 @@ export const boardFields: INodeProperties[] = [
 	/*                                boards:get	                             */
 	/* ------------------------------------------------------------------------- */
 	{
-		displayName: "ID",
-		name: "id",
+		displayName: 'ID',
+		name: 'id',
 		required: true,
-		type: "string",
-		default: "",
+		type: 'string',
+		default: '',
 		displayOptions: {
 			show: {
-				resource: ["boards"],
-				operation: ["get"],
+				resource: ['boards'],
+				operation: ['get'],
 			},
 		},
 	},
@@ -118,22 +118,22 @@ export const boardFields: INodeProperties[] = [
 	/*                                boards:list                              */
 	/* ------------------------------------------------------------------------- */
 	{
-		displayName: "Additional Parameters",
-		name: "additionalParameters",
-		type: "collection",
-		placeholder: "Add Field",
+		displayName: 'Additional Parameters',
+		name: 'additionalParameters',
+		type: 'collection',
+		placeholder: 'Add Field',
 		default: {},
 		displayOptions: {
 			show: {
-				resource: ["boards"],
-				operation: ["list"],
+				resource: ['boards'],
+				operation: ['list'],
 			},
 		},
 		options: [
 			{
-				displayName: "Details",
-				name: "details",
-				type: "boolean",
+				displayName: 'Details',
+				name: 'details',
+				type: 'boolean',
 				default: '',
 			},
 		],
@@ -143,54 +143,54 @@ export const boardFields: INodeProperties[] = [
 	/*                                boards:update	                           */
 	/* ------------------------------------------------------------------------- */
 	{
-		displayName: "ID",
-		name: "id",
+		displayName: 'ID',
+		name: 'id',
 		required: true,
-		type: "string",
-		default: "",
+		type: 'string',
+		default: '',
 		displayOptions: {
 			show: {
-				resource: ["boards"],
-				operation: ["update"],
+				resource: ['boards'],
+				operation: ['update'],
 			},
 		},
 	},
 	{
-		displayName: "Title",
-		name: "title",
+		displayName: 'Title',
+		name: 'title',
 		required: true,
-		type: "string",
-		default: "",
+		type: 'string',
+		default: '',
 		displayOptions: {
 			show: {
-				resource: ["boards"],
-				operation: ["update"],
+				resource: ['boards'],
+				operation: ['update'],
 			},
 		},
 	},
 	{
-		displayName: "Color",
-		name: "color",
+		displayName: 'Color',
+		name: 'color',
 		required: true,
-		type: "string",
-		default: "",
+		type: 'string',
+		default: '',
 		displayOptions: {
 			show: {
-				resource: ["boards"],
-				operation: ["update"],
+				resource: ['boards'],
+				operation: ['update'],
 			},
 		},
 	},
 	{
-		displayName: "Archived",
-		name: "archived",
+		displayName: 'Archived',
+		name: 'archived',
 		required: true,
-		type: "boolean",
+		type: 'boolean',
 		default: false,
 		displayOptions: {
 			show: {
-				resource: ["boards"],
-				operation: ["update"],
+				resource: ['boards'],
+				operation: ['update'],
 			},
 		},
 	},
@@ -199,80 +199,80 @@ export const boardFields: INodeProperties[] = [
 	/*                                boards:addAcl	                           */
 	/* ------------------------------------------------------------------------- */
 	{
-		displayName: "ID",
-		name: "id",
+		displayName: 'ID',
+		name: 'id',
 		required: true,
-		type: "string",
-		default: "",
+		type: 'string',
+		default: '',
 		displayOptions: {
 			show: {
-				resource: ["boards"],
-				operation: ["addAcl"],
+				resource: ['boards'],
+				operation: ['addAcl'],
 			},
 		},
 	},
 	{
-		displayName: "Type",
-		name: "type",
+		displayName: 'Type',
+		name: 'type',
 		required: true,
-		type: "number",
-		default: "",
+		type: 'number',
+		default: '',
 		displayOptions: {
 			show: {
-				resource: ["boards"],
-				operation: ["addAcl"],
+				resource: ['boards'],
+				operation: ['addAcl'],
 			},
 		},
 	},
 	{
-		displayName: "Participant",
-		name: "participant",
+		displayName: 'Participant',
+		name: 'participant',
 		required: true,
-		type: "string",
-		default: "",
+		type: 'string',
+		default: '',
 		displayOptions: {
 			show: {
-				resource: ["boards"],
-				operation: ["addAcl"],
+				resource: ['boards'],
+				operation: ['addAcl'],
 			},
 		},
 	},
 	{
-		displayName: "Permission Edit",
-		name: "permissionEdit",
+		displayName: 'Permission Edit',
+		name: 'permissionEdit',
 		required: true,
-		type: "boolean",
+		type: 'boolean',
 		default: false,
 		displayOptions: {
 			show: {
-				resource: ["boards"],
-				operation: ["addAcl"],
+				resource: ['boards'],
+				operation: ['addAcl'],
 			},
 		},
 	},
 	{
-		displayName: "Permission Share",
-		name: "permissionShare",
+		displayName: 'Permission Share',
+		name: 'permissionShare',
 		required: true,
-		type: "boolean",
+		type: 'boolean',
 		default: false,
 		displayOptions: {
 			show: {
-				resource: ["boards"],
-				operation: ["addAcl"],
+				resource: ['boards'],
+				operation: ['addAcl'],
 			},
 		},
 	},
 	{
-		displayName: "Permission Manage",
-		name: "permissionManage",
+		displayName: 'Permission Manage',
+		name: 'permissionManage',
 		required: true,
-		type: "boolean",
+		type: 'boolean',
 		default: false,
 		displayOptions: {
 			show: {
-				resource: ["boards"],
-				operation: ["addAcl"],
+				resource: ['boards'],
+				operation: ['addAcl'],
 			},
 		},
 	},

@@ -1,4 +1,4 @@
-import { IExecuteFunctions } from "n8n-core";
+import { IExecuteFunctions } from 'n8n-core';
 
 import {
 	IDataObject,
@@ -6,49 +6,49 @@ import {
 	INodeType,
 	INodeTypeDescription,
 	NodeApiError,
-} from "n8n-workflow";
+} from 'n8n-workflow';
 
-import { boardFields, boardOperations } from "./descriptions";
+import { boardFields, boardOperations } from './descriptions';
 
-import { nextCloudApiRequest } from "./GenericFunctions";
+import { nextCloudApiRequest } from './GenericFunctions';
 
-import { version } from "../version";
+import { version } from '../version';
 
 export class NextCloudDeck implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: "NextCloudDeck",
-		name: "nextCloudDeck",
-		icon: "file:nextCloud.svg",
-		group: ["transform"],
+		displayName: 'NextCloudDeck',
+		name: 'nextCloudDeck',
+		icon: 'file:nextCloud.svg',
+		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
 		description: `Consume NextCloud Deck API (v.${version})`,
 		defaults: {
-			name: "NextcloudDeck",
-			color: "#1A82e2",
+			name: 'NextcloudDeck',
+			color: '#1A82e2',
 		},
-		inputs: ["main"],
-		outputs: ["main"],
+		inputs: ['main'],
+		outputs: ['main'],
 		credentials: [
 			{
-				name: "nextCloudDeckApi",
+				name: 'nextCloudDeckApi',
 				required: true,
 			},
 		],
 		properties: [
 			{
-				displayName: "Resource",
-				name: "resource",
-				type: "options",
+				displayName: 'Resource',
+				name: 'resource',
+				type: 'options',
 				options: [
 					{
-						name: "boards",
-						value: "boards",
+						name: 'boards',
+						value: 'boards',
 					},
 				],
-				default: "boards",
+				default: 'boards',
 				required: true,
-				description: "Resource to consume",
+				description: 'Resource to consume',
 			},
 			...boardOperations,
 			...boardFields,
@@ -59,87 +59,87 @@ export class NextCloudDeck implements INodeType {
 		const items = this.getInputData();
 		let responseData;
 		const returnData: IDataObject[] = [];
-		const resource = this.getNodeParameter("resource", 0) as string;
-		const operation = this.getNodeParameter("operation", 0) as string;
+		const resource = this.getNodeParameter('resource', 0) as string;
+		const operation = this.getNodeParameter('operation', 0) as string;
 		let body: IDataObject = {};
-		let method = "";
-		let endpoint = "";
+		let method = '';
+		let endpoint = '';
 		const qs: IDataObject = {};
 
 		for (let i = 0; i < items.length; i++) {
 			try {
 				switch (resource) {
-					case "boards":
-						const boardsUrl = "/boards";
+					case 'boards':
+						const boardsUrl = '/boards';
 						switch (operation) {
-							case "create":
+							case 'create':
 								// ----------------------------------
 								//        boards:create
 								// ----------------------------------
 								body = {
-									title: this.getNodeParameter("title", 0),
-									color: this.getNodeParameter("color", 0),
+									title: this.getNodeParameter('title', 0),
+									color: this.getNodeParameter('color', 0),
 								};
 								endpoint = boardsUrl;
-								method = "POST";
+								method = 'POST';
 								break;
 
-							case "delete":
+							case 'delete':
 								// ----------------------------------
 								//        boards:delete
 								// ----------------------------------
-								endpoint = `${boardsUrl}/${this.getNodeParameter("id", 0)}`;
-								method = "DELETE";
+								endpoint = `${boardsUrl}/${this.getNodeParameter('id', 0)}`;
+								method = 'DELETE';
 								break;
 
-							case "get":
+							case 'get':
 								// ----------------------------------
 								//        boards:get
 								// ----------------------------------
-								endpoint = `${boardsUrl}/${this.getNodeParameter("id", 0)}`;
-								method = "GET";
+								endpoint = `${boardsUrl}/${this.getNodeParameter('id', 0)}`;
+								method = 'GET';
 								break;
 
-							case "list":
+							case 'list':
 								// ----------------------------------
 								//        boards:list
 								// ----------------------------------
 								Object.assign(
 									qs,
-									this.getNodeParameter("additionalParameters", 0)
+									this.getNodeParameter('additionalParameters', 0),
 								);
 								endpoint = boardsUrl;
-								method = "GET";
+								method = 'GET';
 								break;
 
-							case "update":
+							case 'update':
 								// ----------------------------------
 								//        boards:update
 								// ----------------------------------
 								body = {
-									title: this.getNodeParameter("title", 0),
-									color: this.getNodeParameter("color", 0),
+									title: this.getNodeParameter('title', 0),
+									color: this.getNodeParameter('color', 0),
 								};
-								endpoint = `${boardsUrl}/${this.getNodeParameter("id", 0)}`;
-								method = "PUT";
+								endpoint = `${boardsUrl}/${this.getNodeParameter('id', 0)}`;
+								method = 'PUT';
 								break;
 
-							case "addAcl":
+							case 'addAcl':
 								// ----------------------------------
 								//        boards:addAcl
 								// ----------------------------------
 								body = {
-									type: this.getNodeParameter("type", 0),
-									participant: this.getNodeParameter("participant", 0),
-									permissionEdit: this.getNodeParameter("permissionEdit", 0),
-									permissionShare: this.getNodeParameter("permissionShare", 0),
+									type: this.getNodeParameter('type', 0),
+									participant: this.getNodeParameter('participant', 0),
+									permissionEdit: this.getNodeParameter('permissionEdit', 0),
+									permissionShare: this.getNodeParameter('permissionShare', 0),
 									permissionManage: this.getNodeParameter(
-										"permissionManage",
-										0
+										'permissionManage',
+										0,
 									),
 								};
-								endpoint = `${boardsUrl}/${this.getNodeParameter("id", 0)}/acl`;
-								method = "POST";
+								endpoint = `${boardsUrl}/${this.getNodeParameter('id', 0)}/acl`;
+								method = 'POST';
 								break;
 
 							default:
@@ -156,14 +156,14 @@ export class NextCloudDeck implements INodeType {
 					method,
 					endpoint,
 					qs,
-					body
+					body,
 				);
 
 				if (!responseData) {
 					responseData = { success: true };
 				}
 
-				if (responseData?.name === "Error") {
+				if (responseData?.name === 'Error') {
 					throw new NodeApiError(this.getNode(), responseData);
 				}
 

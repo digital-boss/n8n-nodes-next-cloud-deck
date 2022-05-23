@@ -30,7 +30,7 @@ export async function nextCloudApiRequest(this: IHookFunctions | IExecuteFunctio
 		method,
 		auth: {
 			username: credentials.username as string,
-			password: credentials.password as string
+			password: credentials.password as string,
 		},
 		qs,
 		body,

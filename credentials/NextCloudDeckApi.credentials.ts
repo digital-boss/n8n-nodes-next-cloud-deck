@@ -22,6 +22,6 @@ export class NextCloudDeckApi implements ICredentialType {
 			name: 'password',
 			type: 'string',
 			default: '',
-		}
+		},
 	];
 }
