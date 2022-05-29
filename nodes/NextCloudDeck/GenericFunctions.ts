@@ -1,53 +1,74 @@
-import {
-	OptionsWithUri,
-} from 'request';
+import { IExecuteFunctions, IHookFunctions } from 'n8n-core';
+import { NodeApiError, NodeOperationError } from 'n8n-workflow';
 
-import {
-	IExecuteFunctions,
-	IExecuteSingleFunctions,
-	IHookFunctions,
-	ILoadOptionsFunctions,
-} from 'n8n-core';
+import { OptionsWithUri } from 'request';
 
-import {
-	IDataObject,
-	NodeApiError,
-	NodeOperationError,
-} from 'n8n-workflow';
+/**
+ * Make an API request to NextCloud
+ *
+ * @param {IHookFunctions} this
+ * @param {string} method
+ * @param {string} url
+ * @param {object} body
+ * @returns {Promise<any>}
+ */
+export async function nextCloudDeckApiRequest(
+  this: IHookFunctions | IExecuteFunctions,
+  method: string,
+  endpoint: string,
+  body: object | string | Buffer,
+  headers?: object,
+  encoding?: null | undefined,
+  query?: object
+): Promise<any> {
+  // tslint:disable-line:no-any
+  const resource = this.getNodeParameter('resource', 0);
+  const operation = this.getNodeParameter('operation', 0);
 
-export async function nextCloudApiRequest(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions,
-	method: string, endpoint: string, body: object = {}, qs: object = {}, uri?: string): Promise<any> { // tslint:disable-line:no-any
+  const options: OptionsWithUri = {
+    headers,
+    method,
+    body,
+    qs: query ?? {},
+    uri: '',
+    json: false,
+  };
 
-	//Get credentials the user provided for this node
-	const credentials = await this.getCredentials('nextCloudDeckApi') as IDataObject;
+  if (encoding === null) {
+    options.encoding = null;
+  }
 
-	if (credentials === undefined) {
-		throw new NodeOperationError(this.getNode(), 'No credentials got returned!');
-	}
+  const authenticationMethod = this.getNodeParameter('authentication', 0);
 
-	//Make http request according to <https://sendgrid.com/docs/api-reference/>
-	const options: OptionsWithUri = {
-		method,
-		auth: {
-			username: credentials.username as string,
-			password: credentials.password as string,
-		},
-		qs,
-		body,
-		uri: uri || `https://clouddemo.digital-boss.cloud/apps/deck/api/v1.0${endpoint}`,
-		json: true,
-	};
+  try {
+    if (authenticationMethod === 'accessToken') {
+      const credentials = await this.getCredentials('nextCloudDeckApi');
+      if (!credentials) return;
 
-	if (Object.keys(options.qs).length === 0) {
-		delete options.qs;
-	}
-	if (Object.keys(options.body).length === 0) {
-		delete options.body;
-	}
+      options.auth = {
+        user: credentials.user as string,
+        pass: credentials.password as string,
+      };
 
-	try {
-		return this.helpers.request!(options);
-	} catch (error) {
-		throw new NodeApiError(this.getNode(), error);
-	}
+      options.uri = `${credentials.webDavUrl}/${encodeURI(endpoint)}`;
+
+      if (resource === 'user' || operation === 'share') {
+        options.uri = options.uri.replace('/remote.php/webdav', '');
+      }
+      return await this.helpers.request(options);
+    } else {
+      const credentials = await this.getCredentials('nextCloudOAuth2Api');
+      if (!credentials) return;
+
+      options.uri = `${credentials.webDavUrl}/${encodeURI(endpoint)}`;
+
+      if (resource === 'user' && operation === 'create') {
+        options.uri = options.uri.replace('/remote.php/webdav', '');
+      }
+
+      return await this.helpers.requestOAuth2!.call(this, 'nextCloudOAuth2Api', options);
+    }
+  } catch (error) {
+    throw new NodeApiError(this.getNode(), error);
+  }
 }

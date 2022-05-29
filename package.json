@@ -30,7 +30,8 @@
   ],
   "n8n": {
     "credentials": [
-      "dist/credentials/NextCloudDeckApi.credentials.js"
+      "dist/credentials/NextCloudDeckApi.credentials.js",
+      "dist/credentials/NextCloudDeckOAuth2Api.credentials.js"
     ],
     "nodes": [
       "dist/nodes/NextCloudDeck/NextCloudDeck.node.js"
