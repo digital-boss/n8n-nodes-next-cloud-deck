@@ -1,12 +1,12 @@
 {
-  "name": "@digital-boss/n8n-nodes-next-cloud-deck",
+  "name": "@digital-boss/n8n-nodes-nextcloud-deck",
   "version": "0.1.1",
   "description": "NextCloud support for n8n.",
   "license": "SEE LICENSE IN LICENSE.md",
   "homepage": "https://n8n.io",
   "author": {
-    "name": "Valentina Lilova",
-    "email": "valentina.lilova@digital-boss.de"
+    "name": "Khaled Khazem",
+    "email": "khaled.khazem@yahoo.com"
   },
   "repository": {
     "type": "git",
