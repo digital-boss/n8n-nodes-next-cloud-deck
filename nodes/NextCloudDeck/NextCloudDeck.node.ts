@@ -14,6 +14,8 @@ import { boardAclFields, boardAclOperations } from './descriptions/BoardAclDescr
 import { nextCloudDeckApiRequest } from './GenericFunctions';
 
 import { version } from '../version';
+import { stackFields, stackOperations } from './descriptions/StackDescription';
+import { cardFields, cardOperations } from './descriptions/CardDescription';
 
 export class NextCloudDeck implements INodeType {
   description: INodeTypeDescription = {
@@ -25,14 +27,14 @@ export class NextCloudDeck implements INodeType {
     subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
     description: `Consume NextCloud Deck API (v.${version})`,
     defaults: {
-      name: 'NextcloudDeck',
+      name: 'NextCloudDeck',
       color: '#1A82e2',
     },
     inputs: ['main'],
     outputs: ['main'],
     credentials: [
       {
-        name: 'nextCloudDeckApi',
+        name: 'nextCloudApi',
         required: true,
         displayOptions: {
           show: {
@@ -40,15 +42,15 @@ export class NextCloudDeck implements INodeType {
           },
         },
       },
-        {
-          name: 'nextCloudDeckOAuth2Api',
-          required: true,
-          displayOptions: {
-            show: {
-              authentication: ['oAuth2'],
-            },
+      {
+        name: 'nextCloudOAuth2Api',
+        required: true,
+        displayOptions: {
+          show: {
+            authentication: ['oAuth2'],
           },
         },
+      },
     ],
     properties: [
       {
@@ -80,6 +82,14 @@ export class NextCloudDeck implements INodeType {
             name: 'boards ACL',
             value: 'boardsAcl',
           },
+          {
+            name: 'Stacks',
+            value: 'stacks',
+          },
+          {
+            name: 'Cards',
+            value: 'cards',
+          },
         ],
         default: 'boards',
         required: true,
@@ -87,13 +97,16 @@ export class NextCloudDeck implements INodeType {
       },
       ...boardOperations,
       ...boardAclOperations,
+      ...stackOperations,
+      ...cardOperations,
       ...boardFields,
       ...boardAclFields,
+      ...stackFields,
+      ...cardFields,
     ],
   };
 
-  //   async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
-  async execute(this: IExecuteFunctions): Promise<any> {
+  async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
     const items = this.getInputData();
     let responseData;
     const returnData: IDataObject[] = [];
@@ -104,7 +117,10 @@ export class NextCloudDeck implements INodeType {
     let endpoint = '';
     const qs: IDataObject = {};
 
-    const boardsUrl = '/boards';
+    const boardsUrl = 'boards';
+    const stacksUrl = (boardId: string) => `boards/${boardId}/stacks`;
+    const cardsUrl = (boardId: string, stackId: string) =>
+      `boards/${boardId}/stacks/${stackId}/cards`;
 
     for (let i = 0; i < items.length; i++) {
       try {
@@ -187,6 +203,226 @@ export class NextCloudDeck implements INodeType {
             }
             break;
 
+          case 'stacks':
+            switch (operation) {
+              case 'create':
+                // ----------------------------------
+                //        stacks:create
+                // ----------------------------------
+                body = {
+                  title: this.getNodeParameter('title', i),
+                  order: this.getNodeParameter('order', i),
+                };
+                endpoint = stacksUrl(this.getNodeParameter('boardId', i) as string);
+                method = 'POST';
+                break;
+
+              case 'delete':
+                // ----------------------------------
+                //        stacks:delete
+                // ----------------------------------
+                endpoint = `${stacksUrl(
+                  this.getNodeParameter('boardId', i) as string
+                )}/${this.getNodeParameter('stackId', i)}`;
+                method = 'DELETE';
+                break;
+
+              case 'get':
+                // ----------------------------------
+                //        stacks:get
+                // ----------------------------------
+                endpoint = `${stacksUrl(
+                  this.getNodeParameter('boardId', i) as string
+                )}/${this.getNodeParameter('stackId', i)}`;
+                method = 'GET';
+                break;
+
+              case 'list':
+                // ----------------------------------
+                //        stacks:list
+                // ----------------------------------
+                endpoint = `${stacksUrl(
+                  this.getNodeParameter('boardId', i) as string
+                )}/archived`;
+                method = 'GET';
+                break;
+
+              case 'listArchived':
+                // ----------------------------------
+                //        stacks:listArchived
+                // ----------------------------------
+                endpoint = stacksUrl(this.getNodeParameter('boardId', i) as string);
+                method = 'GET';
+                break;
+
+              case 'update':
+                // ----------------------------------
+                //        stacks:update
+                // ----------------------------------
+                body = {
+                  title: this.getNodeParameter('title', i),
+                  order: this.getNodeParameter('order', i),
+                  type: this.getNodeParameter('type', i),
+                  description: this.getNodeParameter('description', i),
+                  dueDate: this.getNodeParameter('dueDate', i),
+                };
+                endpoint = `${stacksUrl(
+                  this.getNodeParameter('boardId', i) as string
+                )}/${this.getNodeParameter('stackId', i)}`;
+                method = 'PUT';
+                break;
+
+              default:
+                break;
+            }
+            break;
+
+          case 'cards':
+            switch (operation) {
+              case 'create':
+                // ----------------------------------
+                //        cards:create
+                // ----------------------------------
+                body = {
+                  title: this.getNodeParameter('title', i),
+                  order: this.getNodeParameter('order', i),
+                };
+                endpoint = cardsUrl(
+                  this.getNodeParameter('boardId', i) as string,
+                  this.getNodeParameter('stackId', i) as string
+                );
+                method = 'POST';
+                break;
+
+              case 'delete':
+                // ----------------------------------
+                //        cards:delete
+                // ----------------------------------
+                endpoint = `${cardsUrl(
+                  this.getNodeParameter('boardId', i) as string,
+                  this.getNodeParameter('stackId', i) as string
+                )}/${this.getNodeParameter('cardId', i)}`;
+                method = 'DELETE';
+                break;
+
+              case 'get':
+                // ----------------------------------
+                //        cards:get
+                // ----------------------------------
+                endpoint = `${cardsUrl(
+                  this.getNodeParameter('boardId', i) as string,
+                  this.getNodeParameter('stackId', i) as string
+                )}/${this.getNodeParameter('cardId', i)}`;
+                method = 'GET';
+                break;
+
+              case 'list':
+                // ----------------------------------
+                //        cards:list
+                // ----------------------------------
+                endpoint = cardsUrl(
+                  this.getNodeParameter('boardId', i) as string,
+                  this.getNodeParameter('stackId', i) as string
+                );
+                method = 'GET';
+                break;
+
+              case 'update':
+                // ----------------------------------
+                //        cards:update
+                // ----------------------------------
+                body = {
+                  title: this.getNodeParameter('title', i),
+                  order: this.getNodeParameter('order', i),
+                  type: this.getNodeParameter('type', i),
+                  owner: this.getNodeParameter('owner', i),
+                  description: this.getNodeParameter('description', i),
+                  dueDate: this.getNodeParameter('dueDate', i),
+                };
+                endpoint = `${cardsUrl(
+                  this.getNodeParameter('boardId', i) as string,
+                  this.getNodeParameter('stackId', i) as string
+                )}/${this.getNodeParameter('cardId', i)}`;
+                method = 'PUT';
+                break;
+
+              case 'assignLabel':
+                // ----------------------------------
+                //        cards:assignLabel
+                // ----------------------------------
+                body = {
+                  labelId: this.getNodeParameter('labelId', i),
+                };
+
+                endpoint = `${cardsUrl(
+                  this.getNodeParameter('boardId', i) as string,
+                  this.getNodeParameter('stackId', i) as string
+                )}/${this.getNodeParameter('cardId', i)}/assignLabel`;
+                method = 'PUT';
+                break;
+
+              case 'removeLabel':
+                // ----------------------------------
+                //        cards:removeLabel
+                // ----------------------------------
+                body = {
+                  labelId: this.getNodeParameter('labelId', i),
+                };
+                endpoint = `${cardsUrl(
+                  this.getNodeParameter('boardId', i) as string,
+                  this.getNodeParameter('stackId', i) as string
+                )}/${this.getNodeParameter('cardId', i)}/removeLabel`;
+                method = 'PUT';
+                break;
+
+              case 'assignUser':
+                // ----------------------------------
+                //        cards:assignUser
+                // ----------------------------------
+                body = {
+                  userId: this.getNodeParameter('userId', i),
+                };
+                endpoint = `${cardsUrl(
+                  this.getNodeParameter('boardId', i) as string,
+                  this.getNodeParameter('stackId', i) as string
+                )}/${this.getNodeParameter('cardId', i)}/assignUser`;
+                method = 'PUT';
+                break;
+
+              case 'removeUser':
+                // ----------------------------------
+                //        cards:removeUser
+                // ----------------------------------
+                body = {
+                  userId: this.getNodeParameter('userId', i),
+                };
+                endpoint = `${cardsUrl(
+                  this.getNodeParameter('boardId', i) as string,
+                  this.getNodeParameter('stackId', i) as string
+                )}/${this.getNodeParameter('cardId', i)}/unassignUser`;
+                method = 'PUT';
+                break;
+
+              case 'reorder':
+                // ----------------------------------
+                //        cards:reorder
+                // ----------------------------------
+                body = {
+                  order: this.getNodeParameter('order', i),
+                  stackIdDest: this.getNodeParameter('stackIdDest', i),
+                };
+                endpoint = `${cardsUrl(
+                  this.getNodeParameter('boardId', i) as string,
+                  this.getNodeParameter('stackId', i) as string
+                )}/${this.getNodeParameter('cardId', i)}/reorder`;
+                method = 'PUT';
+                break;
+
+              default:
+                break;
+            }
+            break;
+
           default:
             break;
         }
@@ -195,8 +431,10 @@ export class NextCloudDeck implements INodeType {
           this,
           method,
           endpoint,
-          qs,
-          body
+          body,
+          {},
+          undefined,
+          qs
         );
 
         if (!responseData) {
@@ -211,8 +449,10 @@ export class NextCloudDeck implements INodeType {
 
         if (Array.isArray(responseData)) {
           returnData.push.apply(returnData, responseData as IDataObject[]);
-        } else if (responseData !== undefined) {
+        } else if (responseData !== undefined && responseData !== null) {
           returnData.push(responseData as IDataObject);
+        } else {
+          returnData.push({} as IDataObject);
         }
       } catch (error) {
         if (this.continueOnFail()) {

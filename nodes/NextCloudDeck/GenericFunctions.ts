@@ -1,5 +1,5 @@
 import { IExecuteFunctions, IHookFunctions } from 'n8n-core';
-import { NodeApiError, NodeOperationError } from 'n8n-workflow';
+import { LoggerProxy, NodeApiError, NodeOperationError } from 'n8n-workflow';
 
 import { OptionsWithUri } from 'request';
 
@@ -42,7 +42,7 @@ export async function nextCloudDeckApiRequest(
 
   try {
     if (authenticationMethod === 'accessToken') {
-      const credentials = await this.getCredentials('nextCloudDeckApi');
+      const credentials = await this.getCredentials('nextCloudApi');
       if (!credentials) return;
 
       options.auth = {
